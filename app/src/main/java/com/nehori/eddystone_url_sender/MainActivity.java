@@ -1,4 +1,4 @@
-// Copyright 2015 Google Inc. All rights reserved.
+// Copyright 2015 Kazutaka Yasuda. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,9 +40,6 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
-
-
-
 import org.uribeacon.beacon.UriBeacon;
 
 import java.io.ByteArrayOutputStream;
@@ -56,13 +53,10 @@ import java.util.Random;
 public class MainActivity extends Activity {
   private static final String TAG = "EddystoneAdvertiser";
   private static final int REQUEST_ENABLE_BLUETOOTH = 1;
-  //private static final byte FRAME_TYPE_UID = 0x00;
   private static final byte FRAME_TYPE_URL = 0x10;
   private static final String SHARED_PREFS_NAME = "txeddystone-uid-prefs";
   private static final String PREF_TX_POWER_LEVEL = "tx_power_level";
   private static final String PREF_TX_ADVERTISE_MODE = "tx_advertise_mode";
-//   private static final String PREF_NAMESPACE = "namespace";
-//   private static final String PREF_INSTANCE = "instance";
 
   // The Eddystone Service UUID, 0xFEAA. See https://github.com/google/eddystone
   private static final ParcelUuid SERVICE_UUID =
@@ -78,10 +72,6 @@ public class MainActivity extends Activity {
 
   private Switch txSwitch;
   private EditText url;
-//   private EditText namespace;
-//   private Button rndNamespace;
-//   private EditText instance;
-//   private Button rndInstance;
   private Spinner txPower;
   private Spinner txMode;
 
@@ -122,14 +112,6 @@ public class MainActivity extends Activity {
   @Override
   protected void onPause() {
     super.onPause();
-//     if (namespace != null && instance != null) {
-//       SharedPreferences.Editor editor = sharedPreferences.edit();
-//       editor.putString(PREF_NAMESPACE, namespace.getText().toString());
-//       editor.putString(PREF_INSTANCE, instance.getText().toString());
-//       editor.putInt(PREF_TX_POWER_LEVEL, txPowerLevel);
-//       editor.putInt(PREF_TX_ADVERTISE_MODE, advertiseMode);
-//       editor.apply();
-//     }
   }
 
   // Checks if Bluetooth advertising is supported on the device and requests enabling if necessary.
@@ -204,24 +186,6 @@ public class MainActivity extends Activity {
         }
       }
     });
-//     namespace = (EditText) findViewById(R.id.namespace);
-//     namespace.setText(sharedPreferences.getString("namespace", "01020304050607080910"));
-//     instance = (EditText) findViewById(R.id.instance);
-//     instance.setText(sharedPreferences.getString("instance", "AABBCCDDEEFF"));
-//     rndNamespace = (Button) findViewById(R.id.randomizeNamespace);
-//     rndNamespace.setOnClickListener(new View.OnClickListener() {
-//       @Override
-//       public void onClick(View v) {
-//         namespace.setText(randomHexString(10));
-//       }
-//     });
-//     rndInstance = (Button) findViewById(R.id.randomizeInstance);
-//     rndInstance.setOnClickListener(new View.OnClickListener() {
-//       @Override
-//       public void onClick(View v) {
-//         instance.setText(randomHexString(6));
-//       }
-//     });
     txPower = (Spinner) findViewById(R.id.txPower);
     ArrayAdapter<CharSequence> txPowerAdapter = ArrayAdapter.createFromResource(
         this, R.array.tx_power_array, android.R.layout.simple_spinner_dropdown_item);
@@ -287,16 +251,6 @@ public class MainActivity extends Activity {
   private void startAdvertising() {
       Log.i(TAG, "Starting ADV, Tx power = " + txPower.getSelectedItem()
             + ", mode = " + txMode.getSelectedItem());
-//       if (!isValidHex(namespace.getText().toString(), 10)) {
-//           namespace.setError("not 10-byte hex");
-//           txSwitch.setChecked(false);
-//           return;
-//       }
-//       if (!isValidHex(instance.getText().toString(), 6)) {
-//           instance.setError("not 6-byte hex");
-//           txSwitch.setChecked(false);
-//           return;
-//       }
       
       AdvertiseSettings advertiseSettings = new AdvertiseSettings.Builder()
           .setAdvertiseMode(advertiseMode)
@@ -306,7 +260,6 @@ public class MainActivity extends Activity {
       
       byte[] serviceData = null;
       try {
-//      serviceData = buildServiceData();
           serviceData = buildUrlData();
       } catch (IOException e) {
           Log.e(TAG, e.toString());
@@ -321,9 +274,6 @@ public class MainActivity extends Activity {
           .setIncludeDeviceName(false)
           .build();
       
-//     namespace.setError(null);
-//     instance.setError(null);
-//     setEnabledViews(false, url, namespace, instance, rndNamespace, rndInstance, txPower, txMode);
       setEnabledViews(false, url, txPower, txMode);
       adv.startAdvertising(advertiseSettings, advertiseData, advertiseCallback);
   }
@@ -331,7 +281,6 @@ public class MainActivity extends Activity {
   private void stopAdvertising() {
     Log.i(TAG, "Stopping ADV");
     adv.stopAdvertising(advertiseCallback);
-//     setEnabledViews(true, url, namespace, instance, rndNamespace, rndInstance, txPower, txMode);
      setEnabledViews(true, url, txPower, txMode);
   }
 
@@ -358,17 +307,6 @@ public class MainActivity extends Activity {
         return (byte) -59;
     }
   }
-
-//  private byte[] buildServiceData() throws IOException {
-//    byte txPower = txPowerLevelToByteValue();
-//    byte[] namespaceBytes = toByteArray(namespace.getText().toString());
-//    byte[] instanceBytes = toByteArray(instance.getText().toString());
-//    ByteArrayOutputStream os = new ByteArrayOutputStream();
-//    os.write(new byte[]{FRAME_TYPE_UID, txPower});
-//    os.write(namespaceBytes);
-//    os.write(instanceBytes);
-//    return os.toByteArray();
-//  }
 
   private boolean isValidHex(String s, int len) {
     return !(s == null || s.isEmpty()) && (s.length() / 2) == len && s.matches("[0-9A-F]+");
